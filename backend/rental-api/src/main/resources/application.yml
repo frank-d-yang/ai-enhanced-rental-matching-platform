@@ -1,0 +1,15 @@
+spring.application.name:
+  rental-api
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/rental_db
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+

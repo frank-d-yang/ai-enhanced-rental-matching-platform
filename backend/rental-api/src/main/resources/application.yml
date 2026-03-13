@@ -13,3 +13,6 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
 
+jwt:
+  secret: your-very-secret-key-your-very-secret-key
+  expiration: 86400000

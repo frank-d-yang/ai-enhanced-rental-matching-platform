@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import run.frank.rentalapi.entity.Booking;
 import run.frank.rentalapi.mapper.BookingMapper;
+import run.frank.rentalapi.security.SecurityUtils;
 import run.frank.rentalapi.service.BookingService;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus("PENDING");
         }
 
+        booking.setTenantId(SecurityUtils.getCurrentUserId());
         bookingMapper.insert(booking);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import run.frank.rentalapi.entity.Property;
 import run.frank.rentalapi.mapper.PropertyMapper;
+import run.frank.rentalapi.security.SecurityUtils;
 import run.frank.rentalapi.service.PropertyService;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public void postProperty(Property property) {
+        property.setOwnerId(SecurityUtils.getCurrentUserId());
         propertyMapper.insert(property);
     }
 }

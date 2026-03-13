@@ -1,0 +1,8 @@
+package run.frank.rentalapi.exception;
+
+public class BusinessException extends RuntimeException{
+
+    public BusinessException(String message) {
+        super(message);
+    }
+}

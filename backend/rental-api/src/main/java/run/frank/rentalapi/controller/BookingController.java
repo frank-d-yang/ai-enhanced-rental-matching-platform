@@ -4,7 +4,7 @@ package run.frank.rentalapi.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import run.frank.rentalapi.entity.Booking;
-import run.frank.rentalapi.mapper.BookingMapper;
+import run.frank.rentalapi.service.BookingService;
 
 import java.util.List;
 
@@ -13,20 +13,16 @@ import java.util.List;
 public class BookingController {
 
     @Autowired
-    private BookingMapper bookingMapper;
+    private BookingService bookingService;
 
     @GetMapping
     public List<Booking> getAllBookings() {
-        return bookingMapper.findAll();
+        return bookingService.findAll();
     }
 
     @PostMapping
     public String createBooking(@RequestBody Booking booking) {
-        if (booking.getStatus() == null || booking.getStatus().isBlank()) {
-            booking.setStatus("PENDING");
-        }
-
-        bookingMapper.insert(booking);
+        bookingService.createBooking(booking);
         return "booking created";
     }
 }

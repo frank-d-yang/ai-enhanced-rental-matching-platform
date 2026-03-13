@@ -3,7 +3,7 @@ package run.frank.rentalapi.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import run.frank.rentalapi.entity.Property;
-import run.frank.rentalapi.mapper.PropertyMapper;
+import run.frank.rentalapi.service.PropertyService;
 
 import java.util.List;
 
@@ -12,16 +12,16 @@ import java.util.List;
 public class PropertyController {
 
     @Autowired
-    private PropertyMapper propertyMapper;
+    private PropertyService propertyService;
 
     @GetMapping
     public List<Property> getAllProperties() {
-        return propertyMapper.findAll();
+        return propertyService.findAll();
     }
 
     @PostMapping
     public String createProperty(@RequestBody Property property) {
-        propertyMapper.insert(property);
+        propertyService.postProperty(property);
         return "Property created";
     }
 }

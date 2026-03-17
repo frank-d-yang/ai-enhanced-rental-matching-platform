@@ -21,7 +21,7 @@ public class Booking {
 
     private Long tenantId;
 
-    private Integer propertyId;
+    private Long propertyId;
 
     private LocalDate startDate;
 

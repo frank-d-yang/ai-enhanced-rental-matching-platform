@@ -9,7 +9,7 @@ import run.frank.rentalapi.service.PropertyService;
 
 
 @RestController
-@RequestMapping("/properties")
+@RequestMapping("/api/properties")
 public class PropertyController {
 
     @Autowired

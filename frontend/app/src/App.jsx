@@ -12,53 +12,53 @@ export default function AiRentalPlatformMock() {
     message: "Hi, I am a UOW student looking for a quiet place near campus."
   });
 
-  // const properties = [
-  //   {
-  //     id: 1,
-  //     title: "Modern Studio Near UOW",
-  //     location: "Wollongong, NSW",
-  //     price: 380,
-  //     rating: 4.8,
-  //     image:
-  //       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-  //     description:
-  //       "Bright studio apartment within walking distance to UOW and Wollongong station. Perfect for students looking for convenience and privacy.",
-  //     status: "Available",
-  //     type: "Studio",
-  //     stay: "3+ months",
-  //     features: ["5 min to UOW", "Fully furnished", "Bills included"]
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Cozy Shared House in Gwynneville",
-  //     location: "Gwynneville, NSW",
-  //     price: 290,
-  //     rating: 4.6,
-  //     image:
-  //       "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-  //     description:
-  //       "Student-friendly shared house with spacious kitchen, shared lounge, and free parking. Great value for long stays.",
-  //     status: "Available",
-  //     type: "Shared House",
-  //     stay: "Flexible",
-  //     features: ["Parking", "Shared kitchen", "Close to bus stop"]
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "CBD Apartment with Ocean View",
-  //     location: "Wollongong CBD, NSW",
-  //     price: 520,
-  //     rating: 4.9,
-  //     image:
-  //       "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
-  //     description:
-  //       "Premium one-bedroom apartment close to restaurants, beach, and transport. Ideal for professionals or premium student living.",
-  //     status: "Booked",
-  //     type: "1 Bedroom",
-  //     stay: "1+ month",
-  //     features: ["Ocean view", "Modern kitchen", "CBD location"]
-  //   }
-  // ];
+  const properties_mock = [
+    // {
+    //   id: 1,
+    //   title: "Modern Studio Near UOW",
+    //   location: "Wollongong, NSW",
+    //   price: 380,
+    //   rating: 4.8,
+    //   image:
+    //     "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    //   description:
+    //     "Bright studio apartment within walking distance to UOW and Wollongong station. Perfect for students looking for convenience and privacy.",
+    //   status: "Available",
+    //   type: "Studio",
+    //   stay: "3+ months",
+    //   features: ["5 min to UOW", "Fully furnished", "Bills included"]
+    // },
+    {
+      id: 1,
+      title: "Cozy Shared House in Gwynneville",
+      location: "Gwynneville, NSW",
+      price: 290,
+      rating: 4.6,
+      image:
+        "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      description:
+        "Student-friendly shared house with spacious kitchen, shared lounge, and free parking. Great value for long stays.",
+      status: "Available",
+      type: "Shared House",
+      stay: "Flexible",
+      features: ["Parking", "Shared kitchen", "Close to bus stop"]
+    },
+    {
+      id: 3,
+      title: "CBD Apartment with Ocean View",
+      location: "Wollongong CBD, NSW",
+      price: 520,
+      rating: 4.9,
+      image:
+        "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+      description:
+        "Premium one-bedroom apartment close to restaurants, beach, and transport. Ideal for professionals or premium student living.",
+      status: "Booked",
+      type: "1 Bedroom",
+      stay: "1+ month",
+      features: ["Ocean view", "Modern kitchen", "CBD location"]
+    }
+  ];
 
   const [properties, setProperties] = useState([]);
   const [page, setPage] = useState(1);
@@ -114,7 +114,7 @@ export default function AiRentalPlatformMock() {
     const fetchProperties = async () => {
       try {
         const data = await getProperties(1, 10);
-        setProperties(data.records || []);
+        setProperties([...(data.records || []), ...properties_mock]);
         setTotal(data.total || 0);
         console.log("properties page data:", data);
       } catch (error) {

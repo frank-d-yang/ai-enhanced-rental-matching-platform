@@ -3,12 +3,17 @@ export default function PropertyDetailPage({
   bookingForm,
   setBookingForm,
 }) {
+
+    const displayImage =
+        selectedProperty.image ||
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80";
+
   return (
     <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
       <section className="space-y-6">
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
           <img
-            src={selectedProperty.image}
+            src={displayImage}
             alt={selectedProperty.title}
             className="h-[380px] w-full object-cover"
           />
@@ -25,7 +30,7 @@ export default function PropertyDetailPage({
           </p>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            {selectedProperty.features.map((feature) => (
+            {(selectedProperty.features||[]).map((feature) => (
               <span
                 key={feature}
                 className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700"
@@ -38,7 +43,7 @@ export default function PropertyDetailPage({
       </section>
 
       <aside className="rounded-3xl bg-white p-6 shadow-sm">
-        <div className="text-2xl font-bold">${selectedProperty.price}</div>
+        <div className="text-2xl font-bold">${selectedProperty.price ?? selectedProperty.pricePerWeek}</div>
         <div className="text-sm text-slate-500">per week</div>
 
         <div className="mt-6 space-y-4">

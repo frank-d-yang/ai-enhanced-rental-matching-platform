@@ -44,7 +44,7 @@ export default function PropertyCard({ property, badgeClass, onViewDetail }) {
         <div className="mt-4 flex items-center justify-between">
           <div>
             <span className="text-xl font-bold">
-              ${property.pricePerWeek || property.weeklyRent || 0}
+              ${property.price || property.pricePerWeek || property.weeklyRent || 0}
             </span>
             <span className="text-sm text-slate-500"> / week</span>
           </div>

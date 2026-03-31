@@ -86,7 +86,7 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
     @Override
     public List<BookingVO> getOwnerBookings() {
         Long currentUserId = SecurityUtils.getCurrentUserId();
-        return bookingMapper.findBookingsByOwnerId(currentUserId).stream()
+        return bookingMapper.findBookingsByPropertyOwnerId(currentUserId).stream()
                 .map(this::toVO)
                 .toList();
     }
@@ -130,13 +130,11 @@ public class BookingServiceImpl extends ServiceImpl<BookingMapper, Booking> impl
             if (conflictCount > 0) {
                 throw new IllegalArgumentException("This booking conflicts with an existing confirmed booking");
             }
-
-            booking.setStatus(targetStatus.name());
-            booking.setUpdatedAt(LocalDateTime.now());
-            bookingMapper.updateById(booking);
         }
 
-
+        booking.setStatus(targetStatus.name());
+        booking.setUpdatedAt(LocalDateTime.now());
+        bookingMapper.updateById(booking);
     }
 
     private BookingVO toVO(Booking booking) {

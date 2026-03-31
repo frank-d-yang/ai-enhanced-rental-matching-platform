@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import HomePage from "./pages/HomePage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
 import { getProperties } from "./api/propertyApi";
+import {getMyBookings, getOwnerBookings, updateBookingStatus} from "./api/bookingApi.js";
 
 export default function AiRentalPlatformMock() {
   const [activePage, setActivePage] = useState("home");
@@ -64,44 +65,48 @@ export default function AiRentalPlatformMock() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const myBookings = [
-    {
-      id: 101,
-      property: "Modern Studio Near UOW",
-      dates: "2026-03-25 → 2026-06-25",
-      status: "PENDING",
-      message:
-        "I am a UOW student and looking for a quiet place near campus.",
-      price: "$380 / week"
-    },
-    {
-      id: 102,
-      property: "CBD Apartment with Ocean View",
-      dates: "2026-04-01 → 2026-05-01",
-      status: "CONFIRMED",
-      message: "Short-term stay for one month.",
-      price: "$520 / week"
-    }
-  ];
+  // const myBookings = [
+  //   {
+  //     id: 101,
+  //     property: "Modern Studio Near UOW",
+  //     dates: "2026-03-25 → 2026-06-25",
+  //     status: "PENDING",
+  //     message:
+  //       "I am a UOW student and looking for a quiet place near campus.",
+  //     price: "$380 / week"
+  //   },
+  //   {
+  //     id: 102,
+  //     property: "CBD Apartment with Ocean View",
+  //     dates: "2026-04-01 → 2026-05-01",
+  //     status: "CONFIRMED",
+  //     message: "Short-term stay for one month.",
+  //     price: "$520 / week"
+  //   }
+  // ];
 
-  const ownerRequests = [
-    {
-      id: 201,
-      tenant: "Frank Ding",
-      property: "Cozy Shared House in Gwynneville",
-      dates: "2026-03-28 → 2026-07-15",
-      status: "PENDING",
-      note: "Needs stable internet for study and remote interviews."
-    },
-    {
-      id: 202,
-      tenant: "Alice Chen",
-      property: "Modern Studio Near UOW",
-      dates: "2026-04-10 → 2026-05-10",
-      status: "PENDING",
-      note: "Looking for a one-month stay near campus."
-    }
-  ];
+  const [myBookings, setMyBookings] = useState([])
+
+  // const ownerRequests = [
+  //   {
+  //     id: 201,
+  //     tenant: "Frank Ding",
+  //     property: "Cozy Shared House in Gwynneville",
+  //     dates: "2026-03-28 → 2026-07-15",
+  //     status: "PENDING",
+  //     note: "Needs stable internet for study and remote interviews."
+  //   },
+  //   {
+  //     id: 202,
+  //     tenant: "Alice Chen",
+  //     property: "Modern Studio Near UOW",
+  //     dates: "2026-04-10 → 2026-05-10",
+  //     status: "PENDING",
+  //     note: "Looking for a one-month stay near campus."
+  //   }
+  // ];
+
+  const [ownerBookings, setOwnerBookings] = useState([]);
 
   const pageTitle = {
     home: "Property Listings",
@@ -124,6 +129,38 @@ export default function AiRentalPlatformMock() {
 
     fetchProperties();
     }, []);
+
+  useEffect(() => {
+    const fetchMyBookings = async () => {
+      try {
+        const data = await getMyBookings();
+        setMyBookings(data || []);
+        console.log("my bookings:", data);
+      } catch (error) {
+        console.error("Failed to fetch my bookings:", error);
+      }
+    };
+
+    if (activePage === "myBookings") {
+      fetchMyBookings();
+    }
+  }, [activePage]);
+
+  const fetchOwnerBookings = async () => {
+    try {
+      const data = await getOwnerBookings();
+      setOwnerBookings(data || []);
+      console.log("owner bookings:", data);
+    } catch(error) {
+      console.error("Failed to fetch owner bookings:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activePage === "owner") {
+      fetchOwnerBookings();
+    }
+  }, [activePage]);
 
   const selectedProperty = useMemo(
     () =>
@@ -232,6 +269,7 @@ export default function AiRentalPlatformMock() {
             selectedProperty={selectedProperty}
             bookingForm={bookingForm}
             setBookingForm={setBookingForm}
+            setActivePage={setActivePage}
           />
         )}
 
@@ -244,9 +282,9 @@ export default function AiRentalPlatformMock() {
               >
                 <div className="flex justify-between">
                   <div>
-                    <div className="font-semibold">{booking.property}</div>
+                    <div className="font-semibold">Property #{booking.propertyId}</div>
                     <div className="text-sm text-slate-500">
-                      {booking.dates}
+                      {booking.startDate} -> {booking.endDate}
                     </div>
                     <div className="mt-2 text-sm text-slate-600">
                       {booking.message}
@@ -268,36 +306,46 @@ export default function AiRentalPlatformMock() {
 
         {activePage === "owner" && (
           <div className="space-y-4">
-            {ownerRequests.map((request) => (
+            {ownerBookings.map((ownerBooking) => (
               <div
-                key={request.id}
+                key={ownerBooking.id}
                 className="rounded-2xl border border-slate-200 p-5"
               >
                 <div className="flex justify-between">
                   <div>
-                    <div className="font-semibold">{request.property}</div>
+                    <div className="font-semibold">{ownerBooking.propertyId}</div>
                     <div className="text-sm text-slate-500">
-                      Tenant: {request.tenant}
+                      Tenant: {ownerBooking.tenantId}
                     </div>
                     <div className="text-sm text-slate-500">
-                      {request.dates}
+                      {ownerBooking.startDate} -> {ownerBooking.endDate}
                     </div>
                   </div>
 
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClass(
-                      request.status
+                        ownerBooking.status
                     )}`}
                   >
-                    {request.status}
+                    {ownerBooking.status}
                   </span>
                 </div>
 
                 <div className="mt-4 flex gap-3">
-                  <button className="rounded-2xl bg-green-600 px-4 py-2 text-sm font-medium text-white">
+                  <button
+                      onClick={async () => {
+                        await updateBookingStatus(ownerBooking.id, "CONFIRMED");
+                        await fetchOwnerBookings();
+                      }}
+                      className="rounded-2xl bg-green-600 px-4 py-2 text-sm font-medium text-white">
                     Confirm
                   </button>
-                  <button className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-medium text-white">
+                  <button
+                      onClick={async () => {
+                        await updateBookingStatus(ownerBooking.id, "REJECTED");
+                        await fetchOwnerBookings();
+                      }}
+                      className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-medium text-white">
                     Reject
                   </button>
                 </div>

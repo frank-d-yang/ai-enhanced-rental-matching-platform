@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/error", "/uploads/**", "/api/properties/**").permitAll()
+                        .requestMatchers("/auth/**", "/error", "/uploads/**", "/api/properties/**", "/api/bookings/**").permitAll()
                         .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter,

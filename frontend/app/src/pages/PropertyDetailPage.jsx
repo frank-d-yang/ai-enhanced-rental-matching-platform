@@ -1,12 +1,53 @@
+import {createBooking} from "../api/bookingApi.js";
+
 export default function PropertyDetailPage({
   selectedProperty,
   bookingForm,
-  setBookingForm,
+                                               setBookingForm,
+                                               setActivePage
 }) {
 
     const displayImage =
         selectedProperty.image ||
         "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80";
+
+    const handleBookingSubmit = async () => {
+        try {
+            if (!bookingForm.startDate || !bookingForm.endDate) {
+                alert("Please select startDate and endDate.");
+                return;
+            }
+
+            if (bookingForm.startDate >= bookingForm.endDate) {
+                alert("EndDate must be later than startDate.");
+                return;
+            }
+
+            const payload = {
+                propertyId: selectedProperty.id,
+                startDate: bookingForm.startDate,
+                endDate: bookingForm.endDate,
+                message: bookingForm.message
+            };
+
+            console.log("booking payload:", payload);
+
+            await createBooking(payload);
+
+            alert("Booking request submitted successfully!");
+
+            setBookingForm({
+                startDate: "",
+                endDate: "",
+                message: ""
+            });
+
+            setActivePage("myBookings");
+        } catch (error) {
+            console.error("Failed to create booking:", error);
+            alert("Failed to submit booking request");
+        }
+    }
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -83,7 +124,9 @@ export default function PropertyDetailPage({
             className="w-full rounded-2xl border px-3 py-3 text-sm"
           />
 
-          <button className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white">
+          <button
+              onClick={handleBookingSubmit}
+              className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white">
             Request Booking
           </button>
         </div>

@@ -1,4 +1,4 @@
-import {createBooking} from "../api/bookingApi.js";
+import {createBooking} from "../../api/bookingApi.js";
 
 export default function PropertyDetailPage({
   selectedProperty,

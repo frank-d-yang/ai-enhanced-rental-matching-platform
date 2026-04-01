@@ -2,6 +2,6 @@ package run.frank.rentalapi.enums;
 
 public enum UserRole {
     TENANT,
-    LANDLORD,
+    OWNER,
     ADMIN
 }

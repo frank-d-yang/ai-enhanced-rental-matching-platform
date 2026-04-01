@@ -9,7 +9,7 @@ import run.frank.rentalapi.dto.RegisterRequest;
 import run.frank.rentalapi.service.AuthService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired

@@ -1,4 +1,4 @@
-import PropertyCard from "../components/PropertyCard";
+import PropertyCard from "../../components/PropertyCard.jsx";
 
 export default function HomePage({
   properties,

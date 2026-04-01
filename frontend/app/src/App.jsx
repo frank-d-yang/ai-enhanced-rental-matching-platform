@@ -1,10 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import HomePage from "./pages/HomePage";
-import PropertyDetailPage from "./pages/PropertyDetailPage";
+import HomePage from "./pages/tenant/HomePage.jsx";
+import PropertyDetailPage from "./pages/tenant/PropertyDetailPage.jsx";
 import { getProperties } from "./api/propertyApi";
 import {getMyBookings, getOwnerBookings, updateBookingStatus} from "./api/bookingApi.js";
+import MyBookingsPage from "./pages/tenant/MyBookingsPage.jsx";
+import BookingRequestsPage from "./pages/owner/BookingRequestsPage.jsx";
+import OwnerDashboardPage from "./pages/owner/OwnerDashboardPage.jsx";
+import OwnerPropertiesPage from "./pages/owner/OwnerPropertiesPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
 
 export default function AiRentalPlatformMock() {
+  const [user, setUser] = useState(null);
+
   const [activePage, setActivePage] = useState("home");
   const [selectedPropertyId, setSelectedPropertyId] = useState(1);
   const [bookingForm, setBookingForm] = useState({
@@ -39,7 +46,7 @@ export default function AiRentalPlatformMock() {
         "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
       description:
         "Student-friendly shared house with spacious kitchen, shared lounge, and free parking. Great value for long stays.",
-      status: "Available",
+      status: "AVAILABLE",
       type: "Shared House",
       stay: "Flexible",
       features: ["Parking", "Shared kitchen", "Close to bus stop"]
@@ -54,7 +61,7 @@ export default function AiRentalPlatformMock() {
         "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
       description:
         "Premium one-bedroom apartment close to restaurants, beach, and transport. Ideal for professionals or premium student living.",
-      status: "Booked",
+      status: "BOOKED",
       type: "1 Bedroom",
       stay: "1+ month",
       features: ["Ocean view", "Modern kitchen", "CBD location"]
@@ -64,6 +71,31 @@ export default function AiRentalPlatformMock() {
   const [properties, setProperties] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+
+  const ownerProperties = [
+    {
+      id: 1,
+      title: "Modern 2 Bedroom Apartment near UOW",
+      location: "Wollongong, NSW",
+      price: 520,
+      status: "PUBLISHED",
+      image:
+          "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      description:
+          "Spacious apartment within walking distance to University of Wollongong, close to shops and public transport.",
+    },
+    {
+      id: 2,
+      title: "Cozy Shared House in Gwynneville",
+      location: "Gwynneville, NSW",
+      price: 290,
+      status: "AVAILABLE",
+      image:
+          "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      description:
+          "Student-friendly shared house with spacious kitchen, shared lounge, and free parking. Great value for long stays.",
+    },
+  ];
 
   // const myBookings = [
   //   {
@@ -106,14 +138,29 @@ export default function AiRentalPlatformMock() {
   //   }
   // ];
 
-  const [ownerBookings, setOwnerBookings] = useState([]);
+  const [bookingRequests, setBookingRequests] = useState([]);
 
   const pageTitle = {
     home: "Property Listings",
     detail: "Property Detail",
     myBookings: "My Bookings",
-    owner: "Owner Dashboard"
+    bookingRequests: "Booking Requests",
+    ownerDashboard: "Owner Dashboard",
+    ownerProperties: "Owner Properties"
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Fail to parse user from localStorage:", error);
+        console.log(storedUser);
+      }
+
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -146,10 +193,10 @@ export default function AiRentalPlatformMock() {
     }
   }, [activePage]);
 
-  const fetchOwnerBookings = async () => {
+  const fetchBookingRequests = async () => {
     try {
       const data = await getOwnerBookings();
-      setOwnerBookings(data || []);
+      setBookingRequests(data || []);
       console.log("owner bookings:", data);
     } catch(error) {
       console.error("Failed to fetch owner bookings:", error);
@@ -158,7 +205,7 @@ export default function AiRentalPlatformMock() {
 
   useEffect(() => {
     if (activePage === "owner") {
-      fetchOwnerBookings();
+      fetchBookingRequests();
     }
   }, [activePage]);
 
@@ -172,24 +219,56 @@ export default function AiRentalPlatformMock() {
   const badgeClass = (status) => {
     switch (status) {
       case "CONFIRMED":
-      case "Available":
+      case "AVAILABLE":
         return "bg-green-100 text-green-700";
       case "PENDING":
         return "bg-yellow-100 text-yellow-700";
       case "REJECTED":
-      case "Booked":
+      case "BOOKED":
         return "bg-red-100 text-red-700";
       default:
         return "bg-slate-100 text-slate-700";
     }
   };
 
+  const ownerSummary = {
+    properties: 3,
+    pendingRequests: 2,
+    confirmedBookings: 5,
+    rejectedRequests: 1,
+  };
+
+  const recentRequests = bookingRequests.slice(0, 3);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setActivePage("home");
+  }
+
+  const ROLES = {
+    GUEST: "GUEST",
+    TENANT: "TENANT",
+    OWNER: "OWNER"
+  }
+
+  const currentRole = user?.role || ROLES.GUEST;
+
   const navItems = [
-    { key: "home", label: "Properties" },
-    { key: "detail", label: "Property Detail" },
-    { key: "myBookings", label: "My Bookings" },
-    { key: "owner", label: "Owner Dashboard" }
+    { key: "home", label: "Properties", roles: [ROLES.GUEST, ROLES.TENANT]},
+    { key: "detail", label: "Property Detail", roles: [ROLES.GUEST, ROLES.TENANT]},
+    { key: "myBookings", label: "My Bookings", roles: [ROLES.TENANT]},
+
+    { key: "ownerDashboard", label: "Owner Dashboard", roles: [ROLES.OWNER]},
+    { key: "ownerProperties", label: "Owner Properties", roles: [ROLES.OWNER]},
+    { key: "bookingRequests", label: "Booking Requests", roles: [ROLES.OWNER]}
   ];
+
+  const visibleNavItems = navItems.filter((item) =>
+    item.roles.includes(currentRole)
+  )
+
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -201,7 +280,7 @@ export default function AiRentalPlatformMock() {
           </div>
 
           <nav className="hidden gap-2 rounded-2xl bg-slate-100 p-1 md:flex">
-            {navItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <button
                 key={item.key}
                 onClick={() => setActivePage(item.key)}
@@ -216,9 +295,25 @@ export default function AiRentalPlatformMock() {
             ))}
           </nav>
 
-          <button className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow">
-            Login
-          </button>
+          {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-slate-600">
+                  Welcome, {user.username} ({user.role})
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow"
+                >
+                  Logout
+                </button>
+              </div>
+          ) : (
+              <button
+                  onClick={() => setActivePage("login")}
+                  className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow">
+                Login
+              </button>
+          )}
         </div>
       </header>
 
@@ -226,29 +321,29 @@ export default function AiRentalPlatformMock() {
 
         {/* Preview header (restored) */}
         <section className="mb-10 border-b pb-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="text-sm font-medium text-violet-600">Current Preview</div>
               <h1 className="text-3xl font-bold">{pageTitle[activePage]}</h1>
               <p className="mt-1 text-sm text-slate-500">
-                This upgraded mock simulates multiple core pages for your React MVP so you can feel the user flow before coding.
+                Tenant view focuses on discovering properties, creating bookings, and tracking booking status.
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <div className="text-xs text-slate-500">Frontend Stack</div>
-                <div className="text-sm font-semibold">React + TS + Vite</div>
+                <div className="text-xs text-slate-500">Frontend Style</div>
+                <div className="text-sm font-semibold">Current UI System</div>
+              </div>
+
+              <div className="rounded-2xl bg-slate-100 px-4 py-3">
+                <div className="text-xs text-slate-500">View Mode</div>
+                <div className="text-sm font-semibold">TENANT</div>
               </div>
 
               <div className="rounded-2xl bg-slate-100 px-4 py-3">
                 <div className="text-xs text-slate-500">Design Goal</div>
-                <div className="text-sm font-semibold">Simple MVP First</div>
-              </div>
-
-              <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <div className="text-xs text-slate-500">This Week</div>
-                <div className="text-sm font-semibold">Frontend + Deploy</div>
+                <div className="text-sm font-semibold">Role-based UX</div>
               </div>
             </div>
           </div>
@@ -273,85 +368,39 @@ export default function AiRentalPlatformMock() {
           />
         )}
 
-        {activePage === "myBookings" && (
-          <div className="space-y-4">
-            {myBookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-2xl border border-slate-200 p-5"
-              >
-                <div className="flex justify-between">
-                  <div>
-                    <div className="font-semibold">Property #{booking.propertyId}</div>
-                    <div className="text-sm text-slate-500">
-                      {booking.startDate} -> {booking.endDate}
-                    </div>
-                    <div className="mt-2 text-sm text-slate-600">
-                      {booking.message}
-                    </div>
-                  </div>
-
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClass(
-                      booking.status
-                    )}`}
-                  >
-                    {booking.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+        {activePage === "myBookings" && user?.role === ROLES.TENANT && (
+            <MyBookingsPage
+                myBookings={myBookings}
+                badgeClass={badgeClass}
+            />
         )}
 
-        {activePage === "owner" && (
-          <div className="space-y-4">
-            {ownerBookings.map((ownerBooking) => (
-              <div
-                key={ownerBooking.id}
-                className="rounded-2xl border border-slate-200 p-5"
-              >
-                <div className="flex justify-between">
-                  <div>
-                    <div className="font-semibold">{ownerBooking.propertyId}</div>
-                    <div className="text-sm text-slate-500">
-                      Tenant: {ownerBooking.tenantId}
-                    </div>
-                    <div className="text-sm text-slate-500">
-                      {ownerBooking.startDate} -> {ownerBooking.endDate}
-                    </div>
-                  </div>
+        {activePage === "ownerDashboard" && user?.role === ROLES.OWNER && (
+            <OwnerDashboardPage
+                ownerSummary={ownerSummary}
+                recentRequests={bookingRequests}
+                badgeClass={badgeClass}
+            />
+        )}
 
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClass(
-                        ownerBooking.status
-                    )}`}
-                  >
-                    {ownerBooking.status}
-                  </span>
-                </div>
+        {activePage === "ownerProperties" && user?.role === ROLES.OWNER && (
+            <OwnerPropertiesPage
+                ownerProperties={ownerProperties}
+                badgeClass={badgeClass}
+                setSelectedPropertyId={setSelectedPropertyId}
+                setActivePage={setActivePage}
+            />
+        )}
 
-                <div className="mt-4 flex gap-3">
-                  <button
-                      onClick={async () => {
-                        await updateBookingStatus(ownerBooking.id, "CONFIRMED");
-                        await fetchOwnerBookings();
-                      }}
-                      className="rounded-2xl bg-green-600 px-4 py-2 text-sm font-medium text-white">
-                    Confirm
-                  </button>
-                  <button
-                      onClick={async () => {
-                        await updateBookingStatus(ownerBooking.id, "REJECTED");
-                        await fetchOwnerBookings();
-                      }}
-                      className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-medium text-white">
-                    Reject
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+        {activePage === "bookingRequests" && user?.role === ROLES.OWNER && (
+            <BookingRequestsPage
+                bookingRequests={bookingRequests}
+                badgeClass={badgeClass}
+            />
+        )}
+
+        {activePage === "login" && !user && (
+            <LoginPage setUser={setUser} setActivePage={setActivePage}/>
         )}
       </main>
     </div>

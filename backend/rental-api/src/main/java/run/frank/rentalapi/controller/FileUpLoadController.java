@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import run.frank.rentalapi.service.FileStorageService;
 
 @RestController
-@RequestMapping("/upload")
+@RequestMapping("/api/upload")
 public class FileUpLoadController {
 
     @Autowired

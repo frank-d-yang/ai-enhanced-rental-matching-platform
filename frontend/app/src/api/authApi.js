@@ -1,15 +1,15 @@
-export async function login(email, password) {
-    const response = await fetch("http://localhost:8080/api/auth/login", {
+import {request} from "./request.js";
+
+export function login(email, password) {
+    return request("/api/auth/login", {
         method: "POST",
-        headers: {
-            "Content-Type" : "application/json",
-        },
-        body:JSON.stringify({email, password})
+        body: JSON.stringify({email, password})
     });
+}
 
-    if (!response.ok) {
-        throw new Error("Login failed");
-    }
-
-    return response.json();
+export function register(data) {
+    return request("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data)
+    });
 }

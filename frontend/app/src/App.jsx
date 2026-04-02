@@ -11,133 +11,21 @@ import LoginPage from "./pages/LoginPage.jsx";
 
 export default function AiRentalPlatformMock() {
   const [user, setUser] = useState(null);
-
   const [activePage, setActivePage] = useState("home");
   const [selectedPropertyId, setSelectedPropertyId] = useState(1);
+
   const [bookingForm, setBookingForm] = useState({
     startDate: "2026-03-25",
     endDate: "2026-06-25",
     message: "Hi, I am a UOW student looking for a quiet place near campus."
   });
 
-  const properties_mock = [
-    // {
-    //   id: 1,
-    //   title: "Modern Studio Near UOW",
-    //   location: "Wollongong, NSW",
-    //   price: 380,
-    //   rating: 4.8,
-    //   image:
-    //     "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-    //   description:
-    //     "Bright studio apartment within walking distance to UOW and Wollongong station. Perfect for students looking for convenience and privacy.",
-    //   status: "Available",
-    //   type: "Studio",
-    //   stay: "3+ months",
-    //   features: ["5 min to UOW", "Fully furnished", "Bills included"]
-    // },
-    {
-      id: 1,
-      title: "Cozy Shared House in Gwynneville",
-      location: "Gwynneville, NSW",
-      price: 290,
-      rating: 4.6,
-      image:
-        "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "Student-friendly shared house with spacious kitchen, shared lounge, and free parking. Great value for long stays.",
-      status: "AVAILABLE",
-      type: "Shared House",
-      stay: "Flexible",
-      features: ["Parking", "Shared kitchen", "Close to bus stop"]
-    },
-    {
-      id: 3,
-      title: "CBD Apartment with Ocean View",
-      location: "Wollongong CBD, NSW",
-      price: 520,
-      rating: 4.9,
-      image:
-        "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "Premium one-bedroom apartment close to restaurants, beach, and transport. Ideal for professionals or premium student living.",
-      status: "BOOKED",
-      type: "1 Bedroom",
-      stay: "1+ month",
-      features: ["Ocean view", "Modern kitchen", "CBD location"]
-    }
-  ];
-
   const [properties, setProperties] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const ownerProperties = [
-    {
-      id: 1,
-      title: "Modern 2 Bedroom Apartment near UOW",
-      location: "Wollongong, NSW",
-      price: 520,
-      status: "PUBLISHED",
-      image:
-          "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-      description:
-          "Spacious apartment within walking distance to University of Wollongong, close to shops and public transport.",
-    },
-    {
-      id: 2,
-      title: "Cozy Shared House in Gwynneville",
-      location: "Gwynneville, NSW",
-      price: 290,
-      status: "AVAILABLE",
-      image:
-          "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-      description:
-          "Student-friendly shared house with spacious kitchen, shared lounge, and free parking. Great value for long stays.",
-    },
-  ];
-
-  // const myBookings = [
-  //   {
-  //     id: 101,
-  //     property: "Modern Studio Near UOW",
-  //     dates: "2026-03-25 → 2026-06-25",
-  //     status: "PENDING",
-  //     message:
-  //       "I am a UOW student and looking for a quiet place near campus.",
-  //     price: "$380 / week"
-  //   },
-  //   {
-  //     id: 102,
-  //     property: "CBD Apartment with Ocean View",
-  //     dates: "2026-04-01 → 2026-05-01",
-  //     status: "CONFIRMED",
-  //     message: "Short-term stay for one month.",
-  //     price: "$520 / week"
-  //   }
-  // ];
-
+  const [ownerProperties, setOwnerProperties] = useState([]);
   const [myBookings, setMyBookings] = useState([])
-
-  // const ownerRequests = [
-  //   {
-  //     id: 201,
-  //     tenant: "Frank Ding",
-  //     property: "Cozy Shared House in Gwynneville",
-  //     dates: "2026-03-28 → 2026-07-15",
-  //     status: "PENDING",
-  //     note: "Needs stable internet for study and remote interviews."
-  //   },
-  //   {
-  //     id: 202,
-  //     tenant: "Alice Chen",
-  //     property: "Modern Studio Near UOW",
-  //     dates: "2026-04-10 → 2026-05-10",
-  //     status: "PENDING",
-  //     note: "Looking for a one-month stay near campus."
-  //   }
-  // ];
-
   const [bookingRequests, setBookingRequests] = useState([]);
 
   const pageTitle = {
@@ -166,7 +54,7 @@ export default function AiRentalPlatformMock() {
     const fetchProperties = async () => {
       try {
         const data = await getProperties(1, 10);
-        setProperties([...(data.records || []), ...properties_mock]);
+        setProperties([...(data.records || [])]);
         setTotal(data.total || 0);
         console.log("properties page data:", data);
       } catch (error) {

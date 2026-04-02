@@ -9,6 +9,7 @@ import run.frank.rentalapi.service.BookingService;
 import run.frank.rentalapi.vo.BookingVO;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -38,9 +39,9 @@ public class BookingController {
     }
 
     @PutMapping("/{bookingId}/status")
-    public String updateBookingStatus(@PathVariable Long bookingId,
+    public Map updateBookingStatus(@PathVariable Long bookingId,
                                       @RequestBody UpdateBookingStatusRequest request) {
         bookingService.updateBookingStatus(bookingId, request);
-        return "Booking status updated successfully!";
+        return Map.of("message", "Booking status updated successfully");
     }
 }

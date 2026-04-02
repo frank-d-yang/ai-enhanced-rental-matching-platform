@@ -1,6 +1,21 @@
-import { useMemo, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
+import {getMyBookings} from "../../api/bookingApi.js";
 
-export default function MyBookingsPage({ myBookings, badgeClass }) {
+export default function MyBookingsPage({ badgeClass }) {
+    const [myBookings, setMyBookings] = useState([]);
+    const fetchMyBookings = async () => {
+        try {
+            const data = await getMyBookings();
+            setMyBookings(data);
+        } catch (error) {
+            console.error(e);
+        }
+    }
+
+    useEffect(() => {
+        fetchMyBookings();
+    }, []);
+
     const [activeTab, setActiveTab] = useState("ALL");
 
     const filteredBookings = useMemo(() => {

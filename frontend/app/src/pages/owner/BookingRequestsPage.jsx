@@ -1,7 +1,22 @@
-import { useMemo, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
+import {getOwnerBookings, updateBookingStatus} from "../../api/bookingApi.js";
 
-export default function BookingRequestsPage({ bookingRequests, badgeClass }) {
-    const [requests, setRequests] = useState(bookingRequests || []);
+export default function BookingRequestsPage({ badgeClass }) {
+    const [requests, setRequests] = useState([]);
+
+    const fetchRequests = async () => {
+        try {
+            const data = await getOwnerBookings();
+            setRequests(data);
+        } catch (error) {
+            console.error("Failed to fetch requests:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchRequests()
+    }, []);
+
     const [activeTab, setActiveTab] = useState("ALL");
 
     const filteredRequests = useMemo(() => {
@@ -20,12 +35,13 @@ export default function BookingRequestsPage({ bookingRequests, badgeClass }) {
         { key: "REJECTED", label: `Rejected (${rejectedCount})` },
     ];
 
-    const handleAction = (id, nextStatus) => {
-        setRequests((prev) =>
-            prev.map((item) =>
-                item.id === id ? { ...item, status: nextStatus } : item
-            )
-        );
+    const handleAction = async (id, nextStatus) => {
+        try {
+            await updateBookingStatus(id, nextStatus);
+            fetchRequests();
+        } catch (error) {
+            console.error("Failed to update booking:", error);
+        }
     };
 
     return (

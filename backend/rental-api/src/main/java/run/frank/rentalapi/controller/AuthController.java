@@ -8,6 +8,8 @@ import run.frank.rentalapi.dto.LoginRequest;
 import run.frank.rentalapi.dto.RegisterRequest;
 import run.frank.rentalapi.service.AuthService;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -16,9 +18,9 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest registerRequest) {
+    public Map register(@RequestBody RegisterRequest registerRequest) {
         authService.register(registerRequest);
-        return "Register success";
+        return Map.of("message", "Register success");
     }
 
     @PostMapping("/login")

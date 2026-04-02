@@ -1,3 +1,5 @@
+const BASE_URL =  "http://localhost:8080";
+
 export async function request(url, options = {}) {
     const token = localStorage.getItem("token");
 
@@ -10,7 +12,7 @@ export async function request(url, options = {}) {
         headers.Authorization = `Bearer ${token}`;
     }
 
-    const response = await fetch(`http://localhost:8080${url}`, {
+    const response = await fetch(BASE_URL + url, {
        ...options,
        headers
     });

@@ -18,7 +18,7 @@ public class PropertyController {
     @GetMapping
     public IPage<Property> searchProperties(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "6") Integer size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection,
             PropertyQueryDto propertyQueryDto) {

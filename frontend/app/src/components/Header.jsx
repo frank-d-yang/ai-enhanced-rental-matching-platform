@@ -10,7 +10,7 @@ export default function Header({
             <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                 <div>
                     <div className="text-xl font-bold">AI Rental Platform</div>
-                    <div className="text-sm text-slate-500">Frontend MVP Mock</div>
+                    <div className="text-sm text-slate-500">Help you find your home</div>
                 </div>
 
                 <nav className="hidden gap-2 rounded-2xl bg-slate-100 p-1 md:flex">

@@ -23,15 +23,161 @@ export default function AiRentalPlatformMock() {
   });
 
   const [properties, setProperties] = useState([]);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
+
+  const [searchParams, setSearchParams] = useState({
+    location: "",
+    minPrice: "",
+    maxPrice: "",
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchProperties = async(page = 1) => {
+    try {
+      const data = await getProperties(page, 6, searchParams);
+
+      setProperties([...(data.records || [])]);
+      setTotalPages(data.size || 0);
+      setCurrentPage(page)
+
+      console.log(
+          "properties page data:", data
+      )
+    } catch (error) {
+      console.error("Failed to fetch properties:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProperties(currentPage);
+  }, []);
 
   const [ownerProperties, setOwnerProperties] = useState([]);
   const [myBookings, setMyBookings] = useState([])
   const [bookingRequests, setBookingRequests] = useState([]);
 
+  const avgPrice =
+      properties.length > 0
+          ? Math.round(
+              properties.reduce((sum, item) => sum + Number(item.pricePerWeek || 0), 0) /
+              properties.length
+          )
+          : 0;
+
+  const ROLES = {
+    GUEST: "GUEST",
+    TENANT: "TENANT",
+    OWNER: "OWNER"
+  }
+
+  const currentRole = user?.role || ROLES.GUEST;
+
+  const selectedProperty = useMemo(
+      () =>
+          properties.find((property) => property.id === selectedPropertyId) ||
+          properties[0],
+      [properties, selectedPropertyId]
+  );
+
+  const ownerSummary = {
+    properties: 3,
+    pendingRequests: 2,
+    confirmedBookings: 5,
+    rejectedRequests: 1,
+  };
+
+  const recentRequests = bookingRequests.slice(0, 3);
+
+  const pageMetaMap = {
+    home: {
+      description: "Browse available properties and find your next rental.",
+      stats: [
+      ],
+    },
+
+    detail: {
+      description: "View property details and submit a booking request.",
+      stats: [
+        { label: "Property", value: selectedProperty?.title || "-" },
+        {
+          label: "Price",
+          value: selectedProperty?.pricePerWeek
+              ? `$${selectedProperty.pricePerWeek}/week`
+              : "-",
+        },
+        { label: "Status", value: selectedProperty?.status || "-" },
+      ],
+    },
+
+    myBookings: {
+      description: "Track and manage your booking requests.",
+      stats: [
+        { label: "Bookings", value: myBookings.length },
+        {
+          label: "Pending",
+          value: myBookings.filter((item) => item.status === "PENDING").length,
+        },
+        { label: "Role", value: currentRole },
+      ],
+    },
+
+    bookingRequests: {
+      description: "Review and respond to tenant booking requests.",
+      stats: [
+        { label: "Requests", value: bookingRequests.length },
+        {
+          label: "Pending",
+          value: bookingRequests.filter((item) => item.status === "PENDING").length,
+        },
+        { label: "Role", value: currentRole },
+      ],
+    },
+
+    ownerDashboard: {
+      description: "Manage your properties and booking activity.",
+      stats: [
+        { label: "Properties", value: ownerSummary.properties },
+        { label: "Pending", value: ownerSummary.pendingRequests },
+        { label: "Confirmed", value: ownerSummary.confirmedBookings },
+      ],
+    },
+
+    ownerProperties: {
+      description: "View and manage your listed properties.",
+      stats: [
+        { label: "Properties", value: ownerProperties.length },
+        {
+          label: "Published",
+          value: ownerProperties.filter((item) => item.status === "PUBLISHED").length,
+        },
+        { label: "Role", value: currentRole },
+      ],
+    },
+
+    login: {
+      description: "Sign in to continue using the platform.",
+      stats: [
+        { label: "Access", value: "Public" },
+        { label: "Page", value: "Login" },
+        { label: "Mode", value: "Guest" },
+      ],
+    },
+
+    register: {
+      description: "Create an account to start renting or listing properties.",
+      stats: [
+        { label: "Access", value: "Public" },
+        { label: "Page", value: "Register" },
+        { label: "Mode", value: "Guest" },
+      ],
+    },
+  };
+
+  const currentPageMeta = pageMetaMap[activePage];
+
   const pageTitle = {
-    home: "Property Listings",
+    home: "Browse Rentals",
     detail: "Property Detail",
     myBookings: "My Bookings",
     bookingRequests: "Booking Requests",
@@ -51,21 +197,6 @@ export default function AiRentalPlatformMock() {
 
     }
   }, []);
-
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const data = await getProperties(1, 10);
-        setProperties([...(data.records || [])]);
-        setTotal(data.total || 0);
-        console.log("properties page data:", data);
-      } catch (error) {
-        console.error("Failed to fetch properties:", error);
-      }
-    };
-
-    fetchProperties();
-    }, []);
 
   useEffect(() => {
     const fetchMyBookings = async () => {
@@ -99,13 +230,6 @@ export default function AiRentalPlatformMock() {
     }
   }, [activePage]);
 
-  const selectedProperty = useMemo(
-    () =>
-      properties.find((property) => property.id === selectedPropertyId) ||
-      properties[0],
-    [properties, selectedPropertyId]
-  );
-
   const badgeClass = (status) => {
     switch (status) {
       case "CONFIRMED":
@@ -121,29 +245,12 @@ export default function AiRentalPlatformMock() {
     }
   };
 
-  const ownerSummary = {
-    properties: 3,
-    pendingRequests: 2,
-    confirmedBookings: 5,
-    rejectedRequests: 1,
-  };
-
-  const recentRequests = bookingRequests.slice(0, 3);
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
     setActivePage("home");
   }
-
-  const ROLES = {
-    GUEST: "GUEST",
-    TENANT: "TENANT",
-    OWNER: "OWNER"
-  }
-
-  const currentRole = user?.role || ROLES.GUEST;
 
   const navItems = [
     { key: "home", label: "Properties", roles: [ROLES.GUEST, ROLES.TENANT]},
@@ -159,7 +266,6 @@ export default function AiRentalPlatformMock() {
     item.roles.includes(currentRole)
   )
 
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header
@@ -174,46 +280,43 @@ export default function AiRentalPlatformMock() {
 
         {/* Preview header (restored) */}
         <section className="mb-10 border-b pb-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <div className="text-sm font-medium text-violet-600">Current Preview</div>
               <h1 className="text-3xl font-bold">{pageTitle[activePage]}</h1>
               <p className="mt-1 text-sm text-slate-500">
-                Tenant view focuses on discovering properties, creating bookings, and tracking booking status.
+                {currentPageMeta?.description}
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <div className="text-xs text-slate-500">Frontend Style</div>
-                <div className="text-sm font-semibold">Current UI System</div>
-              </div>
-
-              <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <div className="text-xs text-slate-500">View Mode</div>
-                <div className="text-sm font-semibold">TENANT</div>
-              </div>
-
-              <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <div className="text-xs text-slate-500">Design Goal</div>
-                <div className="text-sm font-semibold">Role-based UX</div>
-              </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {currentPageMeta?.stats.map((item, index) => (
+                  <div key={index} className="rounded-2xl bg-slate-100 px-4 py-3">
+                    <div className="text-xs text-slate-500">{item.label}</div>
+                    <div className="text-sm font-semibold">{item.value}</div>
+                  </div>
+              ))}
             </div>
           </div>
         </section>
-        
+
 
         {activePage === "home" && (
-           <HomePage
-              properties={properties}
-              badgeClass={badgeClass}
-              setSelectedPropertyId={setSelectedPropertyId}
-              setActivePage={setActivePage}
-          />
+            <HomePage
+                properties={properties}
+                badgeClass={badgeClass}
+                setSelectedPropertyId={setSelectedPropertyId}
+                setActivePage={setActivePage}
+                searchParams={searchParams}
+                setSearchParams={setSearchParams}
+                onSearch={fetchProperties}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={fetchProperties}
+            />
         )}
 
         {activePage === "detail" && (
-          <PropertyDetailPage
+            <PropertyDetailPage
             selectedProperty={selectedProperty}
             bookingForm={bookingForm}
             setBookingForm={setBookingForm}

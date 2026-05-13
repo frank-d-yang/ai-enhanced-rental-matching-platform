@@ -10,6 +10,8 @@ export async function getProperties(page = 1, size = 10, params = {}) {
   if (params.location) queryParams.append("location", params.location);
   if (params.minPrice) queryParams.append("minPrice", params.minPrice);
   if (params.maxPrice) queryParams.append("maxPrice", params.maxPrice);
+  if (params.latitude) queryParams.append("latitude", params.latitude);
+  if (params.longitude) queryParams.append("longitude", params.longitude);
 
   return request(`/api/properties?${queryParams.toString()}`);
 }

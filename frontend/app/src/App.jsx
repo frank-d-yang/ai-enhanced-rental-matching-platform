@@ -28,17 +28,21 @@ export default function AiRentalPlatformMock() {
     location: "",
     minPrice: "",
     maxPrice: "",
+    latitude: "",
+    longitude: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchProperties = async(page = 1) => {
+  const fetchProperties = async(page = 1, params= searchParams) => {
     try {
-      const data = await getProperties(page, 6, searchParams);
+      const data = await getProperties(page, 6, params);
+
+      console.log("params: " , params);
 
       setProperties([...(data.records || [])]);
-      setTotalPages(data.size || 0);
+      setTotalPages(data.pages || 0);
       setCurrentPage(page)
 
       console.log(
@@ -52,6 +56,32 @@ export default function AiRentalPlatformMock() {
   useEffect(() => {
     fetchProperties(currentPage);
   }, []);
+
+  const handleEnableLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          console.log("User location:", lat, lng);
+
+          const locationParams = {
+            ...searchParams,
+            latitude: lat,
+            longitude: lng,
+          };
+
+          console.log(locationParams)
+
+          setSearchParams(locationParams);
+
+          fetchProperties(1, locationParams);
+        },
+        (error) => {
+          console.error("Failed to get location:", error);
+        }
+    );
+  };
 
   const [ownerProperties, setOwnerProperties] = useState([]);
   const [myBookings, setMyBookings] = useState([])
@@ -312,6 +342,7 @@ export default function AiRentalPlatformMock() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={fetchProperties}
+                onEnableLocation={handleEnableLocation}
             />
         )}
 

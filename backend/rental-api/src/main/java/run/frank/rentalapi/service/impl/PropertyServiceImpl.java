@@ -26,6 +26,16 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property> i
     public IPage<Property> searchProperties(Integer page, Integer size, String sortBy, String sortDirection, PropertyQueryDto queryDto) {
         Page<Property> pageRequest = new Page<>(page, size);
 
+        boolean useLocation =
+                queryDto.getLatitude() != null && queryDto.getLongitude() != null;
+
+        if (useLocation) {
+            return propertyMapper.searchPropertiesByLocation(
+                    pageRequest,
+                    queryDto
+            );
+        }
+
         LambdaQueryWrapper<Property> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Property::getStatus, "PUBLISHED");
 

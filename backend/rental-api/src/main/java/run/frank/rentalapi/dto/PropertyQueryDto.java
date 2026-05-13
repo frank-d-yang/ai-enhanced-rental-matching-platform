@@ -24,5 +24,11 @@ public class PropertyQueryDto {
 
     private Integer minParkingSpaces;
 
+    private Double latitude;
+
+    private Double longitude;
+
+    private Double radiusKm;
+
     private String keyword;
 }

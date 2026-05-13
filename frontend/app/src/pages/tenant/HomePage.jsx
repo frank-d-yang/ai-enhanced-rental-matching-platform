@@ -12,10 +12,57 @@ export default function HomePage({
                                      currentPage,
                                      totalPages,
                                      onPageChange,
+                                     onEnableLocation
                                  }) {
+
+    const [showLocationModal, setShowLocationModal] = useState(true);
+
 
     return (
         <div className="space-y-8">
+
+            {showLocationModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+                    <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+                        <div className="flex items-start gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-2xl">
+                                📍
+                            </div>
+
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900">
+                                    Use your location?
+                                </h2>
+
+                                <p className="mt-2 text-sm leading-6 text-slate-600">
+                                    Allow location access so we can show rental properties near you first.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowLocationModal(false)}
+                                className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700"
+                            >
+                                Maybe Later
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onEnableLocation();
+                                    setShowLocationModal(false);
+                                }}
+                                className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700"
+                            >
+                                Allow Location
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Hero */}
             <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
                 <div

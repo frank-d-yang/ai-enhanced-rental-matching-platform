@@ -15,3 +15,7 @@ export async function getProperties(page = 1, size = 10, params = {}) {
 
   return request(`/api/properties?${queryParams.toString()}`);
 }
+
+export const getPropertyById = (id) => {
+  return request(`/api/properties/${id}`);
+}

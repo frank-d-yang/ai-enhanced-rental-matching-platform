@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import run.frank.rentalapi.dto.PropertyQueryDto;
 import run.frank.rentalapi.entity.Property;
 import run.frank.rentalapi.service.PropertyService;
+import run.frank.rentalapi.vo.PropertyVO;
 
 
 @RestController
@@ -27,7 +28,7 @@ public class PropertyController {
     }
 
     @GetMapping("/{id}")
-    public Property getPropertyById(@PathVariable Long id) {
+    public PropertyVO getPropertyById(@PathVariable Long id) {
         return propertyService.getPublishedPropertyById(id);
     }
 

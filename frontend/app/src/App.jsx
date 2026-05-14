@@ -14,6 +14,7 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 export default function AiRentalPlatformMock() {
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("home");
+  const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedPropertyId, setSelectedPropertyId] = useState(1);
 
   const [bookingForm, setBookingForm] = useState({
@@ -25,9 +26,9 @@ export default function AiRentalPlatformMock() {
   const [properties, setProperties] = useState([]);
 
   const [searchParams, setSearchParams] = useState({
-    location: "",
-    minPrice: "",
-    maxPrice: "",
+    location: "Wollongong",
+    minPrice: "250",
+    maxPrice: "450",
     latitude: "",
     longitude: "",
   });
@@ -73,8 +74,6 @@ export default function AiRentalPlatformMock() {
 
           console.log(locationParams)
 
-          setSearchParams(locationParams);
-
           fetchProperties(1, locationParams);
         },
         (error) => {
@@ -102,13 +101,6 @@ export default function AiRentalPlatformMock() {
   }
 
   const currentRole = user?.role || ROLES.GUEST;
-
-  const selectedProperty = useMemo(
-      () =>
-          properties.find((property) => property.id === selectedPropertyId) ||
-          properties[0],
-      [properties, selectedPropertyId]
-  );
 
   const ownerSummary = {
     properties: 3,
@@ -334,6 +326,7 @@ export default function AiRentalPlatformMock() {
             <HomePage
                 properties={properties}
                 badgeClass={badgeClass}
+                setSelectedProperty={setSelectedProperty}
                 setSelectedPropertyId={setSelectedPropertyId}
                 setActivePage={setActivePage}
                 searchParams={searchParams}

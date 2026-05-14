@@ -1,9 +1,11 @@
 import PropertyCard from "../../components/PropertyCard.jsx";
 import {useEffect, useState} from "react";
+import {getPropertyById} from "../../api/propertyApi.js";
 
 export default function HomePage({
                                      properties,
                                      badgeClass,
+                                     setSelectedProperty,
                                      setSelectedPropertyId,
                                      setActivePage,
                                      searchParams,
@@ -129,7 +131,6 @@ export default function HomePage({
                                     location: e.target.value
                                 })
                             }
-                            placeholder="Wollongong"
                             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-slate-400"
 
                         />
@@ -146,7 +147,6 @@ export default function HomePage({
                                     minPrice: e.target.value
                                 })
                             }
-                            placeholder="250"
                             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-slate-400"
                         />
                     </div>
@@ -162,7 +162,6 @@ export default function HomePage({
                                     maxPrice: e.target.value
                                 })
                             }
-                            placeholder="450"
                             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none focus:border-slate-400"
                         />
                     </div>
@@ -188,7 +187,9 @@ export default function HomePage({
                             key={property.id}
                             property={property}
                             badgeClass={badgeClass}
-                            onViewDetail={(id) => {
+                            onViewDetail={async(id) => {
+                                const data = await getPropertyById(id);
+                                setSelectedProperty(data);
                                 setSelectedPropertyId(id);
                                 setActivePage("detail");
                             }}

@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import run.frank.rentalapi.dto.PropertyQueryDto;
 import run.frank.rentalapi.entity.Property;
+import run.frank.rentalapi.vo.PropertyVO;
 
 public interface PropertyService extends IService<Property> {
 
     IPage<Property> searchProperties(Integer page, Integer size, String sortBy, String sortDirection, PropertyQueryDto propertyQueryDto);
 
-    Property getPublishedPropertyById(Long id);
+    PropertyVO getPublishedPropertyById(Long id);
 
     void postProperty(Property property);
 

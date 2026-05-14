@@ -8,7 +8,7 @@ export default function PropertyCard({ property, badgeClass, onViewDetail }) {
   const rating = property.rating || "4.8";
 
   return (
-      <div className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+      <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
         <div className="relative overflow-hidden">
           <img
               src={imageUrl}
@@ -23,7 +23,7 @@ export default function PropertyCard({ property, badgeClass, onViewDetail }) {
           </div>
         </div>
 
-        <div className="p-5">
+        <div className="flex flex-1 flex-col p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3 className="text-2xl font-bold leading-tight text-slate-900">
@@ -56,7 +56,7 @@ export default function PropertyCard({ property, badgeClass, onViewDetail }) {
             ))}
           </div>
 
-          <div className="mt-5 flex items-center justify-between">
+          <div className="mt-auto flex items-center justify-between">
             <div className="flex items-baseline gap-2">
             <span className="text-xl font-semibold text-slate-900">
               ${price}

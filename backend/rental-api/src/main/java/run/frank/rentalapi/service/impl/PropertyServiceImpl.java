@@ -4,23 +4,31 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import run.frank.rentalapi.dto.PropertyQueryDto;
 import run.frank.rentalapi.entity.Property;
+import run.frank.rentalapi.entity.PropertyImage;
 import run.frank.rentalapi.exception.BusinessException;
+import run.frank.rentalapi.mapper.PropertyImageMapper;
 import run.frank.rentalapi.mapper.PropertyMapper;
 import run.frank.rentalapi.security.LoginUser;
 import run.frank.rentalapi.security.SecurityUtils;
 import run.frank.rentalapi.service.PropertyService;
+import run.frank.rentalapi.vo.PropertyVO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property> implements PropertyService {
 
     @Autowired
     private PropertyMapper propertyMapper;
+
+    @Autowired
+    private PropertyImageMapper propertyImageMapper;
 
     @Override
     public IPage<Property> searchProperties(Integer page, Integer size, String sortBy, String sortDirection, PropertyQueryDto queryDto) {
@@ -72,12 +80,29 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property> i
     }
 
     @Override
-    public Property getPublishedPropertyById(Long id) {
+    public PropertyVO getPublishedPropertyById(Long id) {
         LambdaQueryWrapper<Property> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Property::getId, id)
                 .eq(Property::getStatus, "PUBLISHED");
 
-        return this.getOne(queryWrapper);
+        Property property = this.getOne(queryWrapper);
+
+        LambdaQueryWrapper<PropertyImage> imageQueryWrapper = new LambdaQueryWrapper<>();
+        imageQueryWrapper.eq(PropertyImage::getPropertyId, id)
+                .orderByAsc(PropertyImage::getSortOrder);
+
+        List<PropertyImage> images = propertyImageMapper.selectList(imageQueryWrapper);
+
+        PropertyVO vo = new PropertyVO();
+        BeanUtils.copyProperties(property, vo);
+
+        vo.setImages(
+                images.stream()
+                        .map(PropertyImage::getImageUrl)
+                        .toList()
+        );
+
+        return vo;
     }
 
     private void applySorting(LambdaQueryWrapper<Property> queryWrapper, String sortBy, String sortDirection) {
